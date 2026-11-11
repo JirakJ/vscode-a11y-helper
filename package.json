@@ -1,0 +1,213 @@
+{
+  "name": "accessibility-compliance-helper",
+  "displayName": "Accessibility Compliance Helper — WCAG Audit",
+  "description": "Open-source WCAG 2.2 accessibility auditor for HTML, JSX/TSX, Vue, Svelte, Razor and CSS: live diagnostics, quick fixes and a workspace health-score report (Markdown, JSON, HTML, SARIF).",
+  "version": "1.0.0",
+  "publisher": "JakubJirak",
+  "author": {
+    "name": "Jakub Jirák"
+  },
+  "license": "Apache-2.0",
+  "icon": "media/icon.png",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Linters",
+    "Programming Languages",
+    "Other"
+  ],
+  "keywords": [
+    "accessibility",
+    "a11y",
+    "wcag",
+    "wcag 2.2",
+    "aria",
+    "screen reader",
+    "color contrast",
+    "alt text",
+    "html",
+    "jsx",
+    "react",
+    "vue",
+    "svelte",
+    "razor",
+    "sarif",
+    "audit",
+    "lint"
+  ],
+  "galleryBanner": {
+    "color": "#0f2a3d",
+    "theme": "dark"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JirakJ/vscode-a11y-helper.git"
+  },
+  "bugs": {
+    "url": "https://github.com/JirakJ/vscode-a11y-helper/issues"
+  },
+  "homepage": "https://github.com/JirakJ/vscode-a11y-helper#readme",
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onLanguage:html",
+    "onLanguage:javascriptreact",
+    "onLanguage:typescriptreact",
+    "onLanguage:vue",
+    "onLanguage:svelte",
+    "onLanguage:razor",
+    "onLanguage:aspnetcorerazor",
+    "onLanguage:css",
+    "onLanguage:scss",
+    "onLanguage:sass",
+    "onLanguage:less",
+    "onCommand:a11yHelper.auditWorkspace",
+    "onCommand:a11yHelper.auditCurrentFile",
+    "onCommand:a11yHelper.exportReport",
+    "onCommand:a11yHelper.clearDiagnostics"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": true,
+      "description": "The extension only reads files and never executes workspace code, so it runs fully in Restricted Mode."
+    },
+    "virtualWorkspaces": {
+      "supported": true,
+      "description": "Live diagnostics work on any open document; the workspace audit reads files through the VS Code file system API."
+    }
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "a11yHelper.auditWorkspace",
+        "title": "Run Workspace Accessibility Audit",
+        "category": "Accessibility"
+      },
+      {
+        "command": "a11yHelper.auditCurrentFile",
+        "title": "Audit Current File",
+        "category": "Accessibility"
+      },
+      {
+        "command": "a11yHelper.exportReport",
+        "title": "Export Workspace Audit Report…",
+        "category": "Accessibility"
+      },
+      {
+        "command": "a11yHelper.clearDiagnostics",
+        "title": "Clear Accessibility Diagnostics",
+        "category": "Accessibility"
+      }
+    ],
+    "configuration": {
+      "title": "Accessibility Compliance Helper",
+      "properties": {
+        "a11yHelper.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show accessibility diagnostics in the Problems panel for open files."
+        },
+        "a11yHelper.run": {
+          "type": "string",
+          "enum": [
+            "onType",
+            "onSave"
+          ],
+          "enumDescriptions": [
+            "Re-analyse while typing (debounced).",
+            "Re-analyse when a file is opened or saved."
+          ],
+          "default": "onType",
+          "description": "When live diagnostics are refreshed."
+        },
+        "a11yHelper.showAdvisory": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show advisory (INFO) findings such as generic link text or missing new-window warnings. They never lower the health score."
+        },
+        "a11yHelper.rules.contrast": {
+          "type": "boolean",
+          "default": true,
+          "description": "Color Contrast — CSS / SCSS / LESS rules and inline styles (WCAG 1.4.3 / 1.4.11)."
+        },
+        "a11yHelper.rules.labels": {
+          "type": "boolean",
+          "default": true,
+          "description": "Screen Reader Labels — accessible-name computation for interactive elements (WCAG 4.1.2)."
+        },
+        "a11yHelper.rules.landmarks": {
+          "type": "boolean",
+          "default": true,
+          "description": "ARIA Landmarks — main / banner / contentinfo / navigation coverage in full HTML documents (WCAG 1.3.1 / 2.4.1)."
+        },
+        "a11yHelper.rules.headings": {
+          "type": "boolean",
+          "default": true,
+          "description": "Heading Structure — missing / multiple h1, skipped levels, empty headings (WCAG 1.3.1 / 2.4.6)."
+        },
+        "a11yHelper.rules.altText": {
+          "type": "boolean",
+          "default": true,
+          "description": "Alt Text Quality — missing alt, file names, placeholders, redundant phrases (WCAG 1.1.1)."
+        },
+        "a11yHelper.rules.links": {
+          "type": "boolean",
+          "default": true,
+          "description": "Link Purpose — empty links, pseudo-buttons, generic text, unannounced new windows (WCAG 2.4.4 / 3.2.5)."
+        },
+        "a11yHelper.rules.media": {
+          "type": "boolean",
+          "default": true,
+          "description": "Media & Embeds — captions, autoplay with sound, frame titles, object / embed alternatives (WCAG 1.2.2 / 1.4.2 / 4.1.2)."
+        },
+        "a11yHelper.rules.document": {
+          "type": "boolean",
+          "default": true,
+          "description": "Page Metadata — lang, title, viewport zoom, meta refresh, duplicate ids and accesskeys (WCAG 3.1.1 / 2.4.2 / 1.4.4 / 2.2.1)."
+        },
+        "a11yHelper.rules.focus": {
+          "type": "boolean",
+          "default": true,
+          "description": "Keyboard & Focus — positive tabindex, click-only elements, autofocus, removed focus outlines (WCAG 2.1.1 / 2.4.3 / 2.4.7)."
+        },
+        "a11yHelper.audit.exclude": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Additional glob patterns excluded from the workspace audit (node_modules, dist, build, .git and similar folders are always skipped)."
+        },
+        "a11yHelper.audit.maxFileSizeKB": {
+          "type": "number",
+          "default": 2000,
+          "minimum": 1,
+          "description": "Files larger than this are skipped by live diagnostics and the workspace audit."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node esbuild.mjs",
+    "watch": "node esbuild.mjs --watch",
+    "package": "node esbuild.mjs --production",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src test",
+    "test": "vitest run",
+    "icon": "node scripts/gen-icon.mjs",
+    "vscode:prepublish": "npm run package",
+    "vsix": "vsce package --no-dependencies",
+    "verify-package": "node scripts/verify-package.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/vscode": "~1.75.0",
+    "@typescript-eslint/eslint-plugin": "^8.18.0",
+    "@typescript-eslint/parser": "^8.18.0",
+    "@vscode/vsce": "^3.9.2",
+    "esbuild": "^0.28.1",
+    "eslint": "^9.17.0",
+    "typescript": "^5.7.2",
+    "vitest": "4.1.12"
+  }
+}
