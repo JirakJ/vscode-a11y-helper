@@ -129,6 +129,20 @@ export class MarkupTag {
   isDynamic(name: string): boolean {
     const v = this.attributes.get(name);
     if (v === undefined) return false;
+    if (v.length <= 32) return MarkupTag.isDynamicValue(v);
+    // long values are scanned once per tag and remembered — name computation revisits tags many times
+    const cache = (this.dynamicCache ??= new Map<string, boolean>());
+    let cached = cache.get(name);
+    if (cached === undefined) {
+      cached = MarkupTag.isDynamicValue(v);
+      cache.set(name, cached);
+    }
+    return cached;
+  }
+
+  private dynamicCache: Map<string, boolean> | undefined;
+
+  private static isDynamicValue(v: string): boolean {
     let i = 0;
     while (i < v.length && isWhitespace(v[i])) i++;
     if (i < v.length && (v[i] === '{' || v[i] === '@')) return true;
